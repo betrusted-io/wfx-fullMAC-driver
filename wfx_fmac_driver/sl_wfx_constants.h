@@ -161,7 +161,7 @@ static inline uint32_t uint32_identity(uint32_t x)
 #define SL_WAIT_FOREVER  0xFFFFFFFF
 
 #ifndef SL_WFX_DEBUG_MASK
-#define SL_WFX_DEBUG_MASK 0x0000
+#define SL_WFX_DEBUG_MASK 0x040F
 #endif
 
 #define SL_WFX_DEBUG_ERROR   0x0001

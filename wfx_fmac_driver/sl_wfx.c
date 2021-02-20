@@ -2107,6 +2107,10 @@ static sl_status_t sl_wfx_download_run_firmware(void)
   /* Calculate number of download blocks */
   num_blocks = (image_length - 1) / DOWNLOAD_BLOCK_SIZE + 1;
 
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log("--FW download loop--");
+#endif
+
   /* Firmware downloading loop */
   for ( block = 0; block < num_blocks; block++ ) {
     /* check the download status in NCP */
@@ -2148,7 +2152,7 @@ static sl_status_t sl_wfx_download_run_firmware(void)
     SL_WFX_ERROR_CHECK(status);
 
 #if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
-    sl_wfx_host_log("FW> %d/%d \n\r", put, image_length);
+    sl_wfx_host_log_2("FW> %d/%d \n\r", put, image_length);
 #endif
 
     /* update the put register */
@@ -2193,6 +2197,9 @@ static sl_status_t sl_wfx_poll_for_value(uint32_t address, uint32_t polled_value
   sl_status_t status = SL_STATUS_OK;
 
   for (; max_retries > 0; max_retries--) {
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log("sl_wfx_poll_for_value");
+#endif
     status = sl_wfx_apb_read_32(address, &value);
     SL_WFX_ERROR_CHECK(status);
     if (value == polled_value) {
