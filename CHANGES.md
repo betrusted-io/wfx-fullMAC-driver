@@ -1,6 +1,104 @@
 Wi-Fi FMAC Driver Release Note
 ==============================
 
+# Release 3.3.1
+(release date 2021-02-18)
+
+## New Features/Improvements/Bug Fixes
+* Update License terms
+* Aligned on firmware 3.12.1
+
+# Release 3.3.0
+(release date 2020-01-06)
+
+## New Features/Improvements/Bug Fixes
+* Add a 'strategy' parameter to sl_wfx_set_power_mode() to select power save mode
+* Aligned on firmware 3.12.0
+
+# Release 3.2.2
+(release date 2020-11-12)
+
+## New Features/Improvements/Bug Fixes
+* Add default configuration files
+* Aligned on firmware 3.11.1
+
+# Release 3.2.1
+(release date 2020-10-14)
+
+## New Features/Improvements/Bug Fixes
+* Improve Secure Link context initialization
+* Optimize power save implementation
+* sl_wfx_send_request() returns a status when HIF queue is full
+* Aligned on firmware 3.11.0
+
+# Release 3.2.0
+(release date 2020-10-05)
+
+## New Features/Improvements/Bug Fixes
+* Add API to allow WPA3 offloading to the host
+* Aligned on firmware 3.10.0
+
+# Release 3.1.0
+(release date 2020-08-04)
+
+## New Features/Improvements/Bug Fixes
+* Sync to the Secure Link bitmap returned by the firmware in sl_wfx_secure_link_configure()
+* Aligned on firmware 3.9.0
+
+# Release 3.0.4
+(release date 2020-07-20)
+
+## New Features/Improvements/Bug Fixes
+* Fix a potential exploit in sl_wfx_get_pmk()
+* Check if received commands have the correct Secure Link encryption state
+* Check 'get' command status before returning values to the application
+* Aligned on firmware 3.8.0
+
+# Release 3.0.3
+(release date 2020-06-19)
+
+## New Features/Improvements/Bug Fixes
+* Fixed an issue with Secure Link Trusted Enforced parts
+
+# Release 3.0.2
+(release date 2020-06-15)
+
+## New Features/Improvements/Bug Fixes
+* Improve sl_wfx_send_request() and sl_wfx_receive_frame() error reporting
+* Improve sl_wfx_init() execution time
+* Aligned on firmware 3.7.0
+
+## Known issues
+* The driver cannot initialize Secure Link Trusted Enforced parts (sl_wfx_secure_link_configure() not encrypted)
+
+# Release 3.0.0
+(release date 2020-04-14)
+
+## New Features/Improvements/Bug Fixes
+* Remove following APIs:
+  * sl_wfx_join_ibss_command()
+  * sl_wfx_leave_ibss_command()
+* Update context MAC address when calling sl_wfx_set_mac_address()
+* Enable writing of Secure Link key in OTP
+* Improve logging of error indications
+* Fix memory issue with Secure Link
+* Change firmware folder structure
+* Aligned on firmware 3.5.0
+
+# Release 2.4.0
+(release date 2020-03-09)
+
+## New Features/Improvements/Bug Fixes
+* Add the following function to the driver API:
+  * sl_wfx_set_cca_config()
+* Fix handling error when calling sl_wfx_host_lock()
+* Improve SLK negotiation handling robustness
+* Add an error check on the config read in SDIO
+* Do not set up event for:
+  * SL_WFX_SEND_FRAME_REQ_ID request
+  * SL_WFX_SHUT_DOWN_REQ_ID request
+* Aligned on firmware 3.4.1
+
 # Release 2.3.2
 (release date 2019-12-06)
 
