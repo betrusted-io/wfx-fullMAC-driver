@@ -2082,26 +2082,53 @@ static sl_status_t sl_wfx_download_run_firmware(void)
   sl_wfx_host_get_firmware_size(&image_length);
   result = sl_wfx_apb_write_32(ADDR_DWL_CTRL_AREA_IMAGE_SIZE, image_length - FW_HASH_SIZE - FW_SIGNATURE_SIZE - FW_KEYSET_SIZE);
   SL_WFX_ERROR_CHECK(result);
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log_1("--fw image len--", (uint32_t) image_length);
+#endif
 
   // get firmware keyset, which is the first FW_KEYSET_SIZE of given image
   result = sl_wfx_host_get_firmware_data(&buffer, FW_KEYSET_SIZE);
   SL_WFX_ERROR_CHECK(result);
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log_2("--fw data buffer keyset--", (uint32_t) buffer, (uint32_t) encryption_keyset);
+#endif
 
   // check if the firmware keyset corresponds to the chip keyset
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log("--fw data about to call compare_keysets--");
+#endif
   result = sl_wfx_compare_keysets(encryption_keyset, (char *)buffer);
   SL_WFX_ERROR_CHECK(result);
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log_2("--fw compare keysets--", (uint32_t) result, (uint32_t) encryption_keyset);
+#endif
 
   // write image signature, which is the next FW_SIGNATURE_SIZE of given image
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log("--fw about to call get_firmware_data--");
+#endif
   result = sl_wfx_host_get_firmware_data(&buffer, FW_SIGNATURE_SIZE);
   SL_WFX_ERROR_CHECK(result);
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log("--fw about to write signature area--");
+#endif
   result = sl_wfx_apb_write(ADDR_DWL_CTRL_AREA_SIGNATURE, buffer, FW_SIGNATURE_SIZE);
   SL_WFX_ERROR_CHECK(result);
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log_1("--fw data buffer sig--", (uint32_t) buffer);
+#endif
 
   // write image hash, which is the next  FW_HASH_SIZE of given image
   result = sl_wfx_host_get_firmware_data(&buffer, FW_HASH_SIZE);
   SL_WFX_ERROR_CHECK(result);
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log_1("--fw data buffer hash--", (uint32_t) buffer);
+#endif
   result = sl_wfx_apb_write(ADDR_DWL_CTRL_AREA_FW_HASH, buffer, FW_HASH_SIZE);
   SL_WFX_ERROR_CHECK(result);
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log_1("--fw data buffer hash write--", (uint32_t) result);
+#endif
 
   // write version, this is a pre-defined value (?)
   result = sl_wfx_apb_write_32(ADDR_DWL_CTRL_AREA_FW_VERSION, FW_VERSION_VALUE);
@@ -2239,10 +2266,37 @@ static sl_status_t sl_wfx_compare_keysets(uint8_t chip_keyset, char *firmware_ke
   char        keyset_string[3];
   uint8_t     keyset_value;
 
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log("--fw entering sl_wfx_compare_keysets--");
+#endif
   keyset_string[0] = *(firmware_keyset + 6);
   keyset_string[1] = *(firmware_keyset + 7);
   keyset_string[2] = '\0';
-  keyset_value     = (uint8_t)strtoul(keyset_string, NULL, 16);
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log(keyset_string);
+#endif
+  //keyset_value     = (uint8_t)strtoul(keyset_string, NULL, 16);
+  // for some reason this call is causing a panic! it looks like strtoul isn't linked in properly.
+  // manually implement strtoul here, as it's the only call in this FFI
+  keyset_value = 0;
+  for( int i = 0; i < 2; i++ ) {
+    keyset_value <<= 4;
+    if( keyset_string[i] >= '0' && keyset_string[i] <= '9' )
+      keyset_value += ((uint8_t) keyset_string[i] - (uint8_t) '0');
+    else {
+      if( keyset_string[i] >= 'A' && keyset_string[i] <= 'F') {
+        keyset_value += ((uint8_t) keyset_string[i] - (uint8_t) 'A' + 10);
+      } else {
+        // yes this will produce incorrect results if non-hex characters are input
+        keyset_value += ((uint8_t) keyset_string[i] - (uint8_t) 'a' + 10);
+      }
+    }
+  }
+
+#if (SL_WFX_DEBUG_MASK & SL_WFX_DEBUG_FW_LOAD)
+    sl_wfx_host_log_1(keyset_string, (uint32_t) keyset_value);
+    sl_wfx_host_log_2("-- comparison-- ", (uint32_t) keyset_value, (uint32_t) chip_keyset);
+#endif
 
   if (keyset_value == chip_keyset) {
     result = SL_STATUS_OK;

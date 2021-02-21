@@ -426,6 +426,7 @@ sl_status_t sl_wfx_host_schedule_secure_link_renegotiation(void);
  *****************************************************************************/
 #if SL_WFX_DEBUG_MASK
 extern void sl_wfx_host_log(const char *string, ...);
+extern void sl_wfx_host_log_1(const char *string, uint32_t a);
 extern void sl_wfx_host_log_2(const char *string, uint32_t a, uint32_t b);
 #endif
 

@@ -165,7 +165,7 @@ static inline uint32_t uint32_identity(uint32_t x)
 #define SL_WFX_ROUND_UP_VALUE      SL_WFX_SDIO_BLOCK_SIZE
 
 #ifndef SL_WFX_DEBUG_MASK
-#define SL_WFX_DEBUG_MASK 0x040F
+#define SL_WFX_DEBUG_MASK 0x0000 // 0x040F - debug firmware loading
 #endif
 
 #define SL_WFX_DEBUG_ERROR   0x0001
